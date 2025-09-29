@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        h1 {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        p {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+        }
+        h2 {
+            background-color: white;
+            color: black;
+            text-align: center;
+            padding: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1><strong>Admin Welcome to DMC Session</strong></h1>
+</header>
+<h2>DMC Information</h2>
+
+<label for="idInput">Enter UID:</label>
+<input type="text" id="idInput">
+<button onclick="fetchContact()">Search</button>
+
+<table id="contactsTable">
+    <thead>
+        <tr Style ="background-color: yellow;">
+            <th>ID</th>
+            <th>Name</th>
+            <th>Semester</th>
+            <th>DMC Sr No.</th>
+            <th>Collect Mark Sheet</th>
+            <th>Saved Date</th>
+            <th>Status</th> <!-- New column for status -->
+            <th>Submit</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Contact information will be displayed here -->
+    </tbody>
+</table>
+
+<script type="application/json" id="jsonData">
+    [
+        {
+            "id": "1",
+            "name": "Inderjit Singh",
+            "contacts": [
+                {"semester": "1st", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "2nd", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"},
+                {"semester": "3rd", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "4th", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"},
+                {"semester": "5th", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "6th", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"},
+                {"semester": "7th", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "8th", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"}
+            ]
+        },
+        {
+            "id": "2",
+            "name": "kulwinder singh",
+            "contacts": [
+                {"semester": "1st", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "2nd", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"},
+                {"semester": "3rd", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "4th", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"},
+                {"semester": "5th", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "6th", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"},
+                {"semester": "7th", "dmcSrNo": "123-456-7890", "collectMarkSheet": "Yes"},
+                {"semester": "8th", "dmcSrNo": "2013-40-490", "collectMarkSheet": "No"}
+            ]
+        }
+    ]
+</script>
+
+<script>
+    // Function to fetch contact information
+    function fetchContact() {
+        const id = document.getElementById('idInput').value;
+        const jsonData = JSON.parse(document.getElementById('jsonData').textContent);
+        const contactsTable = document.getElementById('contactsTable').querySelector('tbody');
+        contactsTable.innerHTML = '';
+
+        const person = jsonData.find(person => person.id === id);
+        if (person) {
+            person.contacts.forEach(contact => {
+                const newRow = contactsTable.insertRow();
+                newRow.insertCell().textContent = id;
+                newRow.insertCell().textContent = person.name;
+                newRow.insertCell().textContent = contact.semester;
+                newRow.insertCell().textContent = contact.dmcSrNo;
+
+                const collectMarkSheetCell = newRow.insertCell();
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = localStorage.getItem(`rememberCheckbox-${id}-${contact.semester}`) === 'true';
+                collectMarkSheetCell.appendChild(checkbox);
+
+                const savedDateCell = newRow.insertCell();
+                const savedDate = localStorage.getItem(`savedDate-${id}-${contact.semester}`);
+                savedDateCell.textContent = checkbox.checked ? (savedDate ? savedDate : "No Date Saved") : "";
+
+                // Add cell for status
+                const statusCell = newRow.insertCell();
+                const savedStatus = localStorage.getItem(`status-${id}-${contact.semester}`);
+                statusCell.textContent = savedStatus ? savedStatus : ""; // Display saved status if exists
+
+                const submitCell = newRow.insertCell();
+                const submitButton = document.createElement('button');
+                submitButton.textContent = 'Submit';
+                submitButton.onclick = function() {
+                    if (checkbox.checked) {
+                        submitRow(id, person.name, contact.semester, contact.dmcSrNo);
+                        const currentDate = new Date().toLocaleDateString();
+                        localStorage.setItem(`savedDate-${id}-${contact.semester}`, currentDate);
+                        savedDateCell.textContent = currentDate;
+                        localStorage.setItem(`rememberCheckbox-${id}-${contact.semester}`, checkbox.checked);
+                        const selectedStatus = statusDropdown.value;
+                        if (selectedStatus !== '') {
+                            localStorage.setItem(`status-${id}-${contact.semester}`, selectedStatus);
+                            statusCell.textContent = selectedStatus;
+                        } else {
+                            alert("Please select your status before submitting.");
+                        }
+                    } else {
+                        // If checkbox is unchecked, clear the saved date and checkbox state
+                        localStorage.removeItem(`savedDate-${id}-${contact.semester}`);
+                        savedDateCell.textContent = "";
+                        localStorage.removeItem(`rememberCheckbox-${id}-${contact.semester}`);
+                        checkbox.checked = false;
+                        alert("Please check the Collect Mark Sheet checkbox before submitting.");
+                    }
+                };
+                submitCell.appendChild(submitButton);
+            });
+        } else {
+            const newRow = contactsTable.insertRow();
+            const cell = newRow.insertCell();
+            cell.setAttribute('colspan', '8');
+            cell.textContent = 'Contact not found for the given ID';
+        }
+    }
+
+    // Function to handle submission of a row
+    function submitRow(id, name, semester, dmcSrNo) {
+        // Handle submission of the selected row
+        alert(`Submitted row:\n\nID: ${id}\nName: ${name}\nSemester: ${semester}\nDMC Sr No.: ${dmcSrNo}`);
+    }
+
+    // Function to retrieve saved dates and statuses and display them when the page loads
+    window.onload = function() {
+        const jsonData = JSON.parse(document.getElementById('jsonData').textContent);
+        jsonData.forEach(person => {
+            person.contacts.forEach(contact => {
+                const savedDateCell = document.querySelector(`#contactsTable tbody tr:last-child td:nth-child(6)`);
+                const savedDate = localStorage.getItem(`savedDate-${person.id}-${contact.semester}`);
+                if (savedDate) {
+                    savedDateCell.textContent = savedDate;
+                }
+                const checkbox = document.querySelector(`#contactsTable tbody tr:last-child td:nth-child(5) input[type="checkbox"]`);
+                if (checkbox) {
+                    checkbox.checked = localStorage.getItem(`rememberCheckbox-${person.id}-${contact.semester}`) === 'true';
+                }
+                const statusCell = document.querySelector(`#contactsTable tbody tr:last-child td:nth-child(7)`);
+                const savedStatus = localStorage.getItem(`status-${person.id}-${contact.semester}`);
+                if (savedStatus) {
+                    statusCell.textContent = savedStatus;
+                }
+            });
+        });
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar Login - Chandigarh University</title>
+  <link rel="stylesheet" href="./registrarlogin.css" />
+
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex; /* Center content vertically and horizontally */
+      justify-content: center;
+      align-items: center;
+	 background-image: url("./images/cu1.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 1px 1px;
+    }
+
+    /* Container Styles */
+    .container {
+      background-color: #fff;
+      border-radius: 20px; /* Rounded corners */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+      padding: 40px;
+      width: 950px; /* Consistent width for responsiveness */
+	  position: relative;
+  top: 20px;
+  right: 100px;
+    }
+
+    /* Header Styles */
+    header {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Form Styles */
+    form {
+      display: flex; /* Arrange fields horizontally */
+      flex-direction: column;
+      gap: 15px; /* Spacing between fields */
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .field input {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    .field input:focus {
+      outline: none;
+      border-color: #007bff; /* Blue border on focus */
+    }
+
+    /* Button Styles */
+    .field button {
+      background-color: #007bff; /* Blue background */
+      color: #fff; /* White text */
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%; /* Match input width */
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .field button:hover {
+      background-color: #0069d9; /* Darker blue on hover */
+    }
+
+    /* Footer Styles (optional) */
+    footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+      color: #ccc; /* Light gray text */
+    }
+
+    /* Additional Styles (Consider using a CSS preprocessor for better organization) */
+
+    .registrar-logo {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .registrar-logo img {
+      width: 150px; /* Adjust logo size as needed */
+      height: auto;
+    }
+
+    .error-message {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: none; /* Initially hidden */
+    }
+  </style>
+
+  <link href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="registrar-logo">
+        <img src="./images/cu.png" alt="Chandigarh University Logo" />
+      </div>
+      <h2 style="background-image: linear-gradient(to left, #553c9a, #b393d3);
+  color: red;
+  background-clip: text;
+  -webkit-background-clip: text;  font-family:Open Sans ;
+">Registrar Login</h2>
+    </header>
+
+    <form id="loginForm">
+      <div class="error-message"></div>
+
+      <div class="field">
+        <label for="teachusername"><b>Username</b></label>
+        <input type="text" id="teachusername" placeholder="Enter Username" class="input" required />
+      </div>
+
+      <div class="field">
+        <label for="teachpassword"><b>Password</b></label>
+        <input type="password" id="teachpassword" placeholder="Enter Password" class="password" required />
+      </div>
+
+      <div class="field">
+        <button type="submit"><b>Login</b></button>
+      </div>
+    </form>
+
+    <script>
+      // Persist teachusername and teachpassword in sessionStorage (more secure than localStorage)
+      function storeCredentials(teachusername, teachpassword) {
+        sessionStorage.setItem('teachusername', teachusername);
+        sessionStorage.setItem('teachpassword', teachpassword);
+      }
+
+      // Clear credentials from sessionStorage on page leave
+      window.onbeforeunload = function() {
+        sessionStorage.removeItem('teachusername');
+        sessionStorage.removeItem('teachpassword');
+      };
+
+      document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const teachusername = document.getElementById('teachusername').value;
+        const teachpassword = document.getElementById('teachpassword').value;
+
+        // Implement secure authentication here (replace with API call or server-side validation)
+        if (teachusername === 'registrar' && teachpassword === 'registrar123') { // Replace with secure authentication
+          storeCredentials(teachusername, teachpassword);
+          localStorage.setItem('authenticated', 'true');
+          window.location.href = 'registraroffice.html';
+        } else {
+          const errorMessage = document.querySelector('.error-message');
+          errorMessage.textContent = 'Invalid username or password!';
+          errorMessage.style.display = 'block';
+        }
+      });
+    </script>
+  </div>
+</body>
+
+</html>

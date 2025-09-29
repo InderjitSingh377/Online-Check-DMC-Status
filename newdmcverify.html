@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-University Degree Verification</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Verify Degree from Any University</h1>
+        <input type="text" id="barcodeInput" placeholder="Scan Degree Barcode">
+        <button onclick="verifyDegree()">Verify Degree</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+	// Simulated function to get university's verification API endpoint
+function getUniversityAPI(barcode) {
+    // Simulate a university mapping based on the barcode prefix
+    if (barcode.startsWith("UNI1")) {
+        return "https://api.university1.edu/verify-degree";
+    } else if (barcode.startsWith("UNI2")) {
+        return "https://api.university2.edu/verify-degree";
+    } else {
+        return null; // If no corresponding university found
+    }
+}
+
+// Function to verify the degree by calling the university's API
+async function verifyDegree() {
+    const barcodeInput = document.getElementById('barcodeInput').value;
+    const resultDiv = document.getElementById('result');
+    const apiEndpoint = getUniversityAPI(barcodeInput);
+
+    if (!apiEndpoint) {
+        resultDiv.innerHTML = `<p style="color: red;">Invalid University or No Verification Service Available!</p>`;
+        return;
+    }
+
+    try {
+        const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ barcode: barcodeInput })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.isValid) {
+                resultDiv.innerHTML = `
+                    <p style="color: green;">Degree Verified!</p>
+                    <p><strong>Candidate:</strong> ${data.candidate}</p>
+                    <p><strong>College/University:</strong> ${data.university}</p>
+                `;
+            } else {
+                resultDiv.innerHTML = `<p style="color: red;">Invalid Degree!</p>`;
+            }
+        } else {
+            throw new Error('Degree Verification Failed!');
+        }
+    } catch (error) {
+        resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    }
+
+    // Clear input field after scanning
+    document.getElementById('barcodeInput').value = '';
+}
+
+	</script>
+</body>
+</html>

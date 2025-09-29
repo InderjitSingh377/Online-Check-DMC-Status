@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Degree Verification System</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+	background-image: url("./images/cu1.jpeg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 1px 1px;
+  
+}
+
+.container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+}
+.registrar-logo img {
+      width: 150px; /* Adjust logo size as needed */
+      height: auto;
+	  left: 0;
+  top: 0;
+
+    }
+
+</style>
+</head>
+<body>
+
+<!--<div class="registrar-logo">
+        <img src="./images/cu.png" alt="Chandigarh University Logo" />
+      </div>-->
+    <div class="container">
+        <h1>Degree Verification System</h1>
+        <input type="text" id="barcodeInput" placeholder="Scan Degree Barcode">
+        <button onclick="verifyDegree()">Verify Degree</button>
+		
+        <div id="result"></div>
+		<button class="logout-button" onclick="redirectToLogin()">
+    <i class="las la-sign-out-alt"></i>
+    <span>Logout</span>
+</button>
+    </div>
+
+    <script>
+	// Predefined valid degree barcodes for verification (can be extended to fetch data from a server or database)
+const validDegrees = [
+    { barcode: "1234567890", candidate: "John Doe", college: "ABC University" },
+    { barcode: "0987654321", candidate: "Jane Smith", college: "XYZ College" },
+    { barcode: "1122334455", candidate: "Michael Johnson", college: "LMN Institute" }
+];
+
+function redirectToLogin() {
+      // Redirect to the login page
+      window.location.href = "dmcdashboard.html"; // Replace "login.html" with the actual path to your login page
+
+      // Prevent going back to the logout page
+      window.history.pushState(null, null, window.location.href);
+      window.addEventListener('popstate', function(event) {
+        window.history.pushState(null, null, window.location.href);   
+
+      });
+    }
+
+window.addEventListener('beforeunload', function(event) {
+  event.preventDefault();
+  event.returnValue = ''; // Prevent default browser behavior (e.g., confirmation prompt)
+});
+
+window.addEventListener('popstate', function(event) {
+  // Redirect to the desired URL when the back button is clicked
+  window.location.href = "dmcdashboard.html"; // Replace with your desired URL
+});
+
+// Redirect to the desired URL when the forward button is clicked
+window.addEventListener('click', function(event) {
+  if (event.target.tagName === 'A' && event.target.href.startsWith(window.location.origin)) {
+    event.preventDefault();
+    window.location.href = "dmcdashboard.html"; // Replace with your desired URL
+  }
+});
+
+// Function to verify the degree using the scanned barcode
+function verifyDegree() {
+    const barcodeInput = document.getElementById('barcodeInput').value;
+    const resultDiv = document.getElementById('result');
+    
+    // Find the degree with the matching barcode
+    const degree = validDegrees.find(deg => deg.barcode === barcodeInput);
+
+    if (degree) {
+        resultDiv.innerHTML = `
+            <p style="color: green;">Degree Verified!</p>
+            <p><strong>Candidate:</strong> ${degree.candidate}</p>
+            <p><strong>College:</strong> ${degree.college}</p>
+        `;
+    } else {
+        resultDiv.innerHTML = `<p style="color: red;">Invalid Degree or Barcode Not Found!</p>`;
+    }
+
+    // Clear the input field after scanning
+    document.getElementById('barcodeInput').value = '';
+}
+
+	
+	</script>
+</body>
+</html>
